@@ -1,7 +1,10 @@
 import argparse
+import glob
+import librosa
 import math
 import os
 import pyaudio
+import soundfile
 import struct
 import wave
 
@@ -14,9 +17,11 @@ parser.add_argument('mic_idx', type=int, nargs='?', default=None,
 args = parser.parse_args()
 
 RATE = 44100
+LJS_RATE = 22050
 CHANNELS = 1
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
+FORMAT_SOUNDFILE = 'PCM_16'
 
 # The RMS threshold used for stripping empty audio at the beginning and end.
 RMS_THRESHOLD = 25.0
@@ -40,6 +45,7 @@ def get_reference_sample_width(p: pyaudio.PyAudio):
     print('Sample width:', sample_width)
     print('Expected format:', p.get_format_from_width(sample_width))
     print('Expected num channels:', wavefile.getnchannels())
+    print('Expected sample rate:', wavefile.getframerate())
     return sample_width
 
 
@@ -118,6 +124,30 @@ def filter_chunks(chunks, sample_width):
     return []
 
 
+def resample(out_path: str):
+    # Resamples to the ljs sample rate.
+    data, _ = librosa.load(out_path, sr=LJS_RATE)
+    split_ext = os.path.splitext(out_path)
+    new_out_path = split_ext[0] + '_' + str(LJS_RATE) + split_ext[1]
+    soundfile.write(new_out_path, data, LJS_RATE, subtype=FORMAT_SOUNDFILE)
+
+
+def get_recorded_sentences():
+    sentence_idxs = set()
+    for path in glob.glob(os.path.join(OUTPUT_DIR, '*.wav')):
+        sentence_idxs.add(int(os.path.splitext(os.path.basename(path))[0].split('_')[0]))
+    return sentence_idxs
+
+
+def assemble(sentences):
+    # Outputs the assembled csv.
+    lines = []
+    for sentence_idx in sorted(list(get_recorded_sentences())):
+        lines.append(str(sentence_idx) + '_' + str(LJS_RATE) + '.wav|' + sentences[sentence_idx] + '\n')
+    with open(os.path.join(OUTPUT_DIR, 'metadata.csv'), 'wt') as file:
+            file.writelines(lines)
+
+
 def main():
     # Check against the reference file.
     p  = pyaudio.PyAudio()
@@ -148,6 +178,9 @@ def main():
             continue
         elif command == 'undo':
             write_progress(max(0, get_progress() - 1))
+            continue
+        elif command == 'assemble':
+            assemble(sentences)
             continue
 
         # Default behavior is to start the recording flow, which consists of:
@@ -200,12 +233,14 @@ def main():
                 break
 
         if status != 's':
-            wavefile = wave.open(os.path.join(OUTPUT_DIR, str(sentence_idx) + '.wav'), 'wb')
+            out_path = os.path.join(OUTPUT_DIR, str(sentence_idx) + '.wav')
+            wavefile = wave.open(out_path, 'wb')
             wavefile.setnchannels(CHANNELS)
             wavefile.setsampwidth(sample_width)
             wavefile.setframerate(RATE)
             wavefile.writeframes(b''.join(chunks))
             wavefile.close()
+            resample(out_path)
 
         # Commit progress.
         write_progress(sentence_idx + 1)
