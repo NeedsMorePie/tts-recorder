@@ -1,6 +1,8 @@
 import argparse
+import math
 import os
 import pyaudio
+import struct
 import wave
 
 from pynput import keyboard
@@ -16,8 +18,18 @@ CHANNELS = 1
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 
+# The RMS threshold used for stripping empty audio at the beginning and end.
+RMS_THRESHOLD = 25.0
+# The number of chunks at the beginning and end of each recording to ignore.
+# Tapping a keyboard key usually lasts about this long.
+CHUNK_IGNORE_PADDING = 4
+# The number of chunks to keep around the beginning and end of each stripped chunk.
+CHUNK_KEEP_PADDING = 3
+
 OUTPUT_DIR = 'output'
 PROGRESS_FILENAME = 'progress.txt'
+
+SHORT_NORMALIZE = (1.0 / 32768.0)
 
 
 def get_reference_sample_width(p: pyaudio.PyAudio):
@@ -63,6 +75,36 @@ def get_progress() -> int:
     except:
         write_progress(0)
         return 0
+
+
+def compute_rms(chunk, sample_width):
+    count = len(chunk) / sample_width
+    format = "%dh" % (count)
+    shorts = struct.unpack(format, chunk)
+
+    sum_squares = 0.0
+    for sample in shorts:
+        n = sample * SHORT_NORMALIZE
+        sum_squares += n * n
+    rms = math.pow(sum_squares / count, 0.5)
+
+    return rms * 1000
+
+
+def filter_chunks(chunks, sample_width):
+    max_idx = len(chunks) - 1
+    start_idx = CHUNK_IGNORE_PADDING
+    end_idx = max_idx - CHUNK_IGNORE_PADDING
+    while compute_rms(chunks[start_idx], sample_width) < RMS_THRESHOLD and start_idx < max_idx:
+        start_idx = start_idx + 1
+    while compute_rms(chunks[end_idx], sample_width) < RMS_THRESHOLD and end_idx > 0:
+        end_idx = end_idx - 1
+    start_idx = max(start_idx - CHUNK_KEEP_PADDING, 0)
+    end_idx = min(end_idx + CHUNK_KEEP_PADDING, max_idx)
+    if start_idx < end_idx:
+        # + 1 because the end is exclusive.
+        return chunks[start_idx:end_idx + 1]
+    return []
 
 
 def main():
@@ -116,6 +158,7 @@ def main():
                 except:
                     break
                 chunks.append(chunk)
+        chunks = filter_chunks(chunks, sample_width)
 
         print('Replaying...')
         for chunk in chunks:
