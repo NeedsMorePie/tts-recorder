@@ -1,9 +1,15 @@
+import argparse
 import os
 import pyaudio
 import wave
 
 from pynput import keyboard
 
+
+parser = argparse.ArgumentParser(description='Record some audio for TTS training.')
+parser.add_argument('mic_idx', type=int, nargs='?', default=None,
+                    help='The mic index. Find this by using the `devices` command.')
+args = parser.parse_args()
 
 RATE = 44100
 CHANNELS = 1
@@ -14,8 +20,25 @@ OUTPUT_DIR = 'output'
 PROGRESS_FILENAME = 'progress.txt'
 
 
+def get_reference_sample_width(p: pyaudio.PyAudio):
+    wavefile = wave.open('reference_audio.wav', 'rb')
+    sample_width = wavefile.getsampwidth()
+    print('Sample width:', sample_width)
+    print('Expected format:', p.get_format_from_width(sample_width))
+    print('Expected num channels:', wavefile.getnchannels())
+    return sample_width
+
+
+def get_input(text: str):
+    try:
+        return input(text).strip()
+    except:
+        print('\nExiting, sire.')
+        return None
+
+
 def get_sentences():
-    with open('ljs_train_text.txt', 'rt') as file:
+    with open('ljs_train_text.txt', 'rt', encoding='utf8') as file:
         lines = file.read().split('\n')
     sentences = []
     for line in lines:
@@ -45,32 +68,42 @@ def get_progress() -> int:
 def main():
     # Check against the reference file.
     p  = pyaudio.PyAudio()
-    wavefile = wave.open('reference_audio.wav', 'rb')
-    print('Expected format:', p.get_format_from_width(wavefile.getsampwidth()))
-    print('Expected num channels:', wavefile.getnchannels())
+    sample_width = get_reference_sample_width(p)
+
+    input_device_idx = args.mic_idx if args.mic_idx is not None else p.get_default_input_device_info().get('index')
+    print('Using mic', p.get_device_info_by_index(input_device_idx))
+
+    stream = p.open(format=FORMAT,
+        channels=CHANNELS,
+        rate=RATE,
+        input=True,
+        input_device_index=input_device_idx,
+        output=True,
+        frames_per_buffer=CHUNK_SIZE)
 
     sentences = get_sentences()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     while True:
-        try:
-            command = input('Your next sentence, sire? ')
-        except:
-            print('\nExiting, sire.')
-            return
+        command = get_input('Your next sentence, sire? ')
+        if command is None:
+            break
+        if command == 'devices':
+            for i in range(p.get_device_count()):
+                if p.get_device_info_by_index(i).get('maxInputChannels') > 0:
+                    print(p.get_device_info_by_index(i))
+            continue
         sentence_idx = get_progress()
         if sentence_idx >= len(sentences):
             print('You are done, sire.')
-            return
-        print(sentences[sentence_idx])
+            break
+
+        print('')
+        print('>', sentences[sentence_idx])
+        print('')
+        if get_input('Practice now. Press enter to start recording.') is None:
+            break
 
         print('Recording... Press space to stop.')
-        # TODO: Does this stream need to be re-created every time?
-        stream = p.open(format=FORMAT,
-            channels=CHANNELS,
-            rate=RATE,
-            input=True,
-            output=True,
-            frames_per_buffer=CHUNK_SIZE)
         chunks = []
         pressed_keys = []
         def on_press(key):
@@ -84,7 +117,21 @@ def main():
                     break
                 chunks.append(chunk)
 
+        print('Replaying...')
+        for chunk in chunks:
+            stream.write(chunk)
+        
+        wavefile = wave.open(os.path.join(OUTPUT_DIR, str(sentence_idx) + '.wav'), 'wb')
+        wavefile.setnchannels(CHANNELS)
+        wavefile.setsampwidth(sample_width)
+        wavefile.setframerate(RATE)
+        wavefile.writeframes(b''.join(chunks))
+        wavefile.close()
+
         write_progress(sentence_idx + 1)
+
+    stream.close()
+    p.terminate()
 
 
 if __name__ == '__main__':
