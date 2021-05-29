@@ -126,14 +126,23 @@ def main():
     sentences = get_sentences()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     while True:
+        # Get command and multiplex behaviors.
         command = get_input('Your next sentence, sire? ')
         if command is None:
             break
-        if command == 'devices':
+        elif command == 'devices':
             for i in range(p.get_device_count()):
                 if p.get_device_info_by_index(i).get('maxInputChannels') > 0:
                     print(p.get_device_info_by_index(i))
             continue
+
+        # Default behavior is to start the recording flow, which consists of:
+        # 1. Showing the sentence to read.
+        # 2. Recording audio.
+        # 3. Processing audio (stripping the start/end of any empty audio).
+        # 4. Replaying the audio.
+        # 5. Either redo or skip the current sentence.
+
         sentence_idx = get_progress()
         if sentence_idx >= len(sentences):
             print('You are done, sire.')
@@ -145,32 +154,43 @@ def main():
         if get_input('Practice now. Press enter to start recording.') is None:
             break
 
-        print('Recording... Press space to stop.')
+        status = ''
         chunks = []
-        pressed_keys = []
-        def on_press(key):
-            if key == keyboard.Key.space:
-                pressed_keys.append(key)
-        with keyboard.Listener(on_press=on_press):
-            while not pressed_keys:
-                try:
-                    chunk = stream.read(CHUNK_SIZE)
-                except:
-                    break
-                chunks.append(chunk)
-        chunks = filter_chunks(chunks, sample_width)
+        while True:
+            print('Recording... Press enter to stop.')
+            chunks = []
+            pressed_keys = []
+            def on_press(key):
+                if key == keyboard.Key.enter:
+                    pressed_keys.append(key)
+            with keyboard.Listener(on_press=on_press):
+                while not pressed_keys:
+                    try:
+                        chunk = stream.read(CHUNK_SIZE)
+                    except:
+                        break
+                    chunks.append(chunk)
+            chunks = filter_chunks(chunks, sample_width)
+            # Bit of a hack, but this absorbs the enter key that was pressed to stop recording.
+            get_input('')
 
-        print('Replaying...')
-        for chunk in chunks:
-            stream.write(chunk)
-        
-        wavefile = wave.open(os.path.join(OUTPUT_DIR, str(sentence_idx) + '.wav'), 'wb')
-        wavefile.setnchannels(CHANNELS)
-        wavefile.setsampwidth(sample_width)
-        wavefile.setframerate(RATE)
-        wavefile.writeframes(b''.join(chunks))
-        wavefile.close()
+            print('Replaying...')
+            for chunk in chunks:
+                stream.write(chunk)
 
+            status = get_input('Redo [r] or skip [s] (default is to commit)? ')
+            if status != 'r':
+                break
+
+        if status != 's':
+            wavefile = wave.open(os.path.join(OUTPUT_DIR, str(sentence_idx) + '.wav'), 'wb')
+            wavefile.setnchannels(CHANNELS)
+            wavefile.setsampwidth(sample_width)
+            wavefile.setframerate(RATE)
+            wavefile.writeframes(b''.join(chunks))
+            wavefile.close()
+
+        # Commit progress.
         write_progress(sentence_idx + 1)
 
     stream.close()
