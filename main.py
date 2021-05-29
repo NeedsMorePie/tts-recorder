@@ -20,6 +20,8 @@ FORMAT = pyaudio.paInt16
 
 # The RMS threshold used for stripping empty audio at the beginning and end.
 RMS_THRESHOLD = 25.0
+# The required minimum average RMS of the stripped audio for it to be considered good enough.
+MIN_AVG_RMS = 40.0
 # The number of chunks at the beginning and end of each recording to ignore.
 # Tapping a keyboard key usually lasts about this long.
 CHUNK_IGNORE_PADDING = 4
@@ -103,7 +105,16 @@ def filter_chunks(chunks, sample_width):
     end_idx = min(end_idx + CHUNK_KEEP_PADDING, max_idx)
     if start_idx < end_idx:
         # + 1 because the end is exclusive.
-        return chunks[start_idx:end_idx + 1]
+        result_chunks = chunks[start_idx:end_idx + 1]
+        # Check the quality of result chunks.
+        avg_rms = 0.0
+        for chunk in result_chunks:
+            avg_rms = avg_rms + compute_rms(chunk, sample_width)
+        avg_rms = avg_rms / len(result_chunks)
+        if avg_rms > MIN_AVG_RMS:
+            return result_chunks
+        else:
+            print('Your audio was too quiet. Get closer to the mic, sire.')
     return []
 
 
@@ -134,6 +145,9 @@ def main():
             for i in range(p.get_device_count()):
                 if p.get_device_info_by_index(i).get('maxInputChannels') > 0:
                     print(p.get_device_info_by_index(i))
+            continue
+        elif command == 'undo':
+            write_progress(max(0, get_progress() - 1))
             continue
 
         # Default behavior is to start the recording flow, which consists of:
@@ -173,6 +187,9 @@ def main():
             chunks = filter_chunks(chunks, sample_width)
             # Bit of a hack, but this absorbs the enter key that was pressed to stop recording.
             get_input('')
+            if not chunks:
+                print('Sire, your audio was garbage. Please try again.')
+                continue
 
             print('Replaying...')
             for chunk in chunks:
