@@ -2,6 +2,8 @@ import os
 import pyaudio
 import wave
 
+from pynput import keyboard
+
 
 RATE = 44100
 CHANNELS = 1
@@ -10,6 +12,16 @@ FORMAT = pyaudio.paInt16
 
 OUTPUT_DIR = 'output'
 PROGRESS_FILENAME = 'progress.txt'
+
+
+class KeyboardListener(keyboard.Listener):
+    def __init__(self):
+        super().__init__()
+        self.key_pressed = False
+
+    def on_press(self, _):
+        """Overridden."""
+        self.key_pressed = True
 
 
 def get_sentences():
@@ -47,12 +59,12 @@ def main():
     print('Expected format:', p.get_format_from_width(wavefile.getsampwidth()))
     print('Expected num channels:', wavefile.getnchannels())
 
-    # stream = p.open(format=FORMAT,
-    #     channels=CHANNELS,
-    #     rate=RATE,
-    #     input=True,
-    #     output=True,
-    #     frames_per_buffer=CHUNK_SIZE)
+    stream = p.open(format=FORMAT,
+        channels=CHANNELS,
+        rate=RATE,
+        input=True,
+        output=True,
+        frames_per_buffer=CHUNK_SIZE)
 
     sentences = get_sentences()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -67,6 +79,19 @@ def main():
             print('You are done, sire.')
             return
         print(sentences[sentence_idx])
+
+        print('Recording...')
+        chunks = []
+        keyboard_listener = KeyboardListener()
+        keyboard_listener.start()
+        while not keyboard_listener.key_pressed:
+            try:
+                chunk = stream.read(CHUNK_SIZE)
+            except:
+                continue
+            chunks.append(chunk)
+        keyboard_listener.stop()
+
         write_progress(sentence_idx + 1)
 
 

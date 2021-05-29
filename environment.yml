@@ -4,10 +4,24 @@ channels:
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
+  - alabaster=0.7.12=py_0
   - alsa-lib=1.2.3=h516909a_0
+  - astroid=2.5.6=py39hf3d152e_0
+  - babel=2.9.1=pyh44b312d_0
+  - brotlipy=0.7.0=py39h38d8fee_1001
   - ca-certificates=2020.12.5=ha878542_0
   - certifi=2020.12.5=py39hf3d152e_1
+  - cffi=1.14.5=py39h261ae71_0
+  - chardet=4.0.0=py39hf3d152e_1
+  - colorama=0.4.4=pyh9f0ad1d_0
+  - cryptography=3.4.7=py39hbca0aa6_0
+  - docutils=0.17.1=py39hf3d152e_0
+  - idna=2.10=pyh9f0ad1d_0
+  - imagesize=1.2.0=py_0
+  - isort=5.8.0=pyhd8ed1ab_0
   - jack=0.125.0=hf484d3e_1001
+  - jinja2=2.11.3=pyh44b312d_0
+  - lazy-object-proxy=1.6.0=py39h27cfd23_0
   - ld_impl_linux-64=2.33.1=h53a641e_7
   - libblas=3.9.0=8_openblas
   - libcblas=3.9.0=8_openblas
@@ -19,20 +33,46 @@ dependencies:
   - liblapack=3.9.0=8_openblas
   - libopenblas=0.3.12=pthreads_hb3c22a3_1
   - libstdcxx-ng=9.1.0=hdf63c60_0
+  - markupsafe=1.1.1=py39h38d8fee_2
+  - mccabe=0.6.1=py_1
   - ncurses=6.2=he6710b0_1
   - numpy=1.19.4=py39h57d35e7_1
   - openssl=1.1.1k=h27cfd23_0
+  - packaging=20.9=pyh44b312d_0
   - pip=21.1.1=py39h06a4308_0
   - portaudio=19.6.0=h1398938_3
   - pyaudio=0.2.11=py39h07f9747_1002
+  - pycparser=2.20=pyh9f0ad1d_2
+  - pygments=2.9.0=pyhd8ed1ab_0
+  - pylint=2.7.2=py39hf3d152e_0
+  - pynput=1.7.1=py39hde42818_1
+  - pyopenssl=20.0.1=pyhd8ed1ab_0
+  - pyparsing=2.4.7=pyh9f0ad1d_0
+  - pysocks=1.7.1=py39hf3d152e_3
   - python=3.9.5=hdb3f193_3
+  - python-xlib=0.28=pyh9f0ad1d_0
   - python_abi=3.9=1_cp39
+  - pytz=2021.1=pyhd8ed1ab_0
   - readline=8.1=h27cfd23_0
+  - requests=2.25.1=pyhd3deb0d_0
   - scipy=1.5.3=py39hf3f25e7_0
   - setuptools=52.0.0=py39h06a4308_0
+  - setuptools-lint=0.6.0=pyh9f0ad1d_0
+  - six=1.16.0=pyh6c4a22f_0
+  - snowballstemmer=2.1.0=pyhd8ed1ab_0
+  - sphinx=4.0.2=pyh6c4a22f_1
+  - sphinxcontrib-applehelp=1.0.2=py_0
+  - sphinxcontrib-devhelp=1.0.2=py_0
+  - sphinxcontrib-htmlhelp=2.0.0=pyhd8ed1ab_0
+  - sphinxcontrib-jsmath=1.0.1=py_0
+  - sphinxcontrib-qthelp=1.0.3=py_0
+  - sphinxcontrib-serializinghtml=1.1.5=pyhd8ed1ab_0
   - sqlite=3.35.4=hdfb4753_0
   - tk=8.6.10=hbc83047_0
+  - toml=0.10.2=pyhd8ed1ab_0
   - tzdata=2020f=h52ac0ba_0
+  - urllib3=1.26.5=pyhd8ed1ab_0
   - wheel=0.36.2=pyhd3eb1b0_0
+  - wrapt=1.11.2=py39h07f9747_1
   - xz=5.2.5=h7b6447c_0
   - zlib=1.2.11=h7b6447c_3
