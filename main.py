@@ -4,7 +4,7 @@ import wave
 
 
 RATE = 44100
-CHANNELS = 2
+CHANNELS = 1
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 
@@ -41,20 +41,18 @@ def get_progress() -> int:
 
 
 def main():
-    # p  = pyaudio.PyAudio()
-
-    # wavefile = wave.oopen('reference_audio.wav', 'rb')
-    # print('format:', p.get_format_from_width(wavefile.getsampwidth()))
-    # print('FORMAT:', FORMAT)
-    # print('p.get_device_cunt():', p.get_device_count())
+    # Check against the reference file.
+    p  = pyaudio.PyAudio()
+    wavefile = wave.open('reference_audio.wav', 'rb')
+    print('Expected format:', p.get_format_from_width(wavefile.getsampwidth()))
+    print('Expected num channels:', wavefile.getnchannels())
 
     # stream = p.open(format=FORMAT,
     #     channels=CHANNELS,
     #     rate=RATE,
     #     input=True,
     #     output=True,
-    #     frames_per_buffer=CHUNK_SIZE,
-    #     output_device_index=0)
+    #     frames_per_buffer=CHUNK_SIZE)
 
     sentences = get_sentences()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
