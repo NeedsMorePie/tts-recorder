@@ -1,19 +1,34 @@
 name: tts_recorder
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
-  - ca-certificates=2021.4.13=h06a4308_1
-  - certifi=2020.12.5=py39h06a4308_0
+  - alsa-lib=1.2.3=h516909a_0
+  - ca-certificates=2020.12.5=ha878542_0
+  - certifi=2020.12.5=py39hf3d152e_1
+  - jack=0.125.0=hf484d3e_1001
   - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libblas=3.9.0=8_openblas
+  - libcblas=3.9.0=8_openblas
+  - libdb=6.2.32=he1b5a44_0
   - libffi=3.3=he6710b0_2
   - libgcc-ng=9.1.0=hdf63c60_0
+  - libgfortran-ng=7.5.0=h14aa051_19
+  - libgfortran4=7.5.0=h14aa051_19
+  - liblapack=3.9.0=8_openblas
+  - libopenblas=0.3.12=pthreads_hb3c22a3_1
   - libstdcxx-ng=9.1.0=hdf63c60_0
   - ncurses=6.2=he6710b0_1
+  - numpy=1.19.4=py39h57d35e7_1
   - openssl=1.1.1k=h27cfd23_0
   - pip=21.1.1=py39h06a4308_0
+  - portaudio=19.6.0=h1398938_3
+  - pyaudio=0.2.11=py39h07f9747_1002
   - python=3.9.5=hdb3f193_3
+  - python_abi=3.9=1_cp39
   - readline=8.1=h27cfd23_0
+  - scipy=1.5.3=py39hf3f25e7_0
   - setuptools=52.0.0=py39h06a4308_0
   - sqlite=3.35.4=hdfb4753_0
   - tk=8.6.10=hbc83047_0
