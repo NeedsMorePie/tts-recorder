@@ -14,16 +14,6 @@ OUTPUT_DIR = 'output'
 PROGRESS_FILENAME = 'progress.txt'
 
 
-class KeyboardListener(keyboard.Listener):
-    def __init__(self):
-        super().__init__()
-        self.key_pressed = False
-
-    def on_press(self, _):
-        """Overridden."""
-        self.key_pressed = True
-
-
 def get_sentences():
     with open('ljs_train_text.txt', 'rt') as file:
         lines = file.read().split('\n')
@@ -59,13 +49,6 @@ def main():
     print('Expected format:', p.get_format_from_width(wavefile.getsampwidth()))
     print('Expected num channels:', wavefile.getnchannels())
 
-    stream = p.open(format=FORMAT,
-        channels=CHANNELS,
-        rate=RATE,
-        input=True,
-        output=True,
-        frames_per_buffer=CHUNK_SIZE)
-
     sentences = get_sentences()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     while True:
@@ -80,17 +63,26 @@ def main():
             return
         print(sentences[sentence_idx])
 
-        print('Recording...')
+        print('Recording... Press space to stop.')
+        # TODO: Does this stream need to be re-created every time?
+        stream = p.open(format=FORMAT,
+            channels=CHANNELS,
+            rate=RATE,
+            input=True,
+            output=True,
+            frames_per_buffer=CHUNK_SIZE)
         chunks = []
-        keyboard_listener = KeyboardListener()
-        keyboard_listener.start()
-        while not keyboard_listener.key_pressed:
-            try:
-                chunk = stream.read(CHUNK_SIZE)
-            except:
-                continue
-            chunks.append(chunk)
-        keyboard_listener.stop()
+        pressed_keys = []
+        def on_press(key):
+            if key == keyboard.Key.space:
+                pressed_keys.append(key)
+        with keyboard.Listener(on_press=on_press):
+            while not pressed_keys:
+                try:
+                    chunk = stream.read(CHUNK_SIZE)
+                except:
+                    break
+                chunks.append(chunk)
 
         write_progress(sentence_idx + 1)
 

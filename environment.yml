@@ -7,6 +7,7 @@ dependencies:
   - alabaster=0.7.12=py_0
   - alsa-lib=1.2.3=h516909a_0
   - astroid=2.5.6=py39hf3d152e_0
+  - attr=2.4.48=h516909a_0
   - babel=2.9.1=pyh44b312d_0
   - brotlipy=0.7.0=py39h38d8fee_1001
   - ca-certificates=2020.12.5=ha878542_0
@@ -15,32 +16,50 @@ dependencies:
   - chardet=4.0.0=py39hf3d152e_1
   - colorama=0.4.4=pyh9f0ad1d_0
   - cryptography=3.4.7=py39hbca0aa6_0
+  - dbus=1.13.6=he372182_0
   - docutils=0.17.1=py39hf3d152e_0
+  - expat=2.2.9=he1b5a44_2
+  - fftw=3.3.8=nompi_hfc0cae8_1114
+  - gettext=0.19.8.1=h5e8e0c9_1
+  - glib=2.68.2=h36276a3_0
   - idna=2.10=pyh9f0ad1d_0
   - imagesize=1.2.0=py_0
   - isort=5.8.0=pyhd8ed1ab_0
   - jack=0.125.0=hf484d3e_1001
   - jinja2=2.11.3=pyh44b312d_0
+  - json-c=0.13.1=hbfbb72e_1002
   - lazy-object-proxy=1.6.0=py39h27cfd23_0
   - ld_impl_linux-64=2.33.1=h53a641e_7
   - libblas=3.9.0=8_openblas
+  - libcap=2.41=h516909a_0
   - libcblas=3.9.0=8_openblas
   - libdb=6.2.32=he1b5a44_0
   - libffi=3.3=he6710b0_2
+  - libflac=1.3.3=he1b5a44_0
   - libgcc-ng=9.1.0=hdf63c60_0
   - libgfortran-ng=7.5.0=h14aa051_19
   - libgfortran4=7.5.0=h14aa051_19
+  - libiconv=1.16=h516909a_0
   - liblapack=3.9.0=8_openblas
+  - libogg=1.3.2=h516909a_1002
   - libopenblas=0.3.12=pthreads_hb3c22a3_1
+  - libprotobuf=3.13.0.1=h8b12597_0
+  - libsndfile=1.0.29=he1b5a44_0
   - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libtool=2.4.6=h58526e2_1007
+  - libvorbis=1.3.7=he1b5a44_0
+  - lz4-c=1.9.2=he1b5a44_3
   - markupsafe=1.1.1=py39h38d8fee_2
   - mccabe=0.6.1=py_1
   - ncurses=6.2=he6710b0_1
   - numpy=1.19.4=py39h57d35e7_1
   - openssl=1.1.1k=h27cfd23_0
+  - orc=1.6.5=hd3605a7_0
   - packaging=20.9=pyh44b312d_0
+  - pcre=8.44=he1b5a44_0
   - pip=21.1.1=py39h06a4308_0
   - portaudio=19.6.0=h1398938_3
+  - pulseaudio=13.0=h0e019cf_2
   - pyaudio=0.2.11=py39h07f9747_1002
   - pycparser=2.20=pyh9f0ad1d_2
   - pygments=2.9.0=pyhd8ed1ab_0
@@ -59,6 +78,7 @@ dependencies:
   - setuptools=52.0.0=py39h06a4308_0
   - setuptools-lint=0.6.0=pyh9f0ad1d_0
   - six=1.16.0=pyh6c4a22f_0
+  - snappy=1.1.8=he1b5a44_3
   - snowballstemmer=2.1.0=pyhd8ed1ab_0
   - sphinx=4.0.2=pyh6c4a22f_1
   - sphinxcontrib-applehelp=1.0.2=py_0
@@ -76,3 +96,4 @@ dependencies:
   - wrapt=1.11.2=py39h07f9747_1
   - xz=5.2.5=h7b6447c_0
   - zlib=1.2.11=h7b6447c_3
+  - zstd=1.4.5=h6597ccf_2
