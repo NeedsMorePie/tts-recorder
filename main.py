@@ -143,7 +143,7 @@ def assemble(sentences):
     # Outputs the assembled csv.
     lines = []
     for sentence_idx in sorted(list(get_recorded_sentences())):
-        lines.append(str(sentence_idx) + '_' + str(LJS_RATE) + '.wav|' + sentences[sentence_idx] + '\n')
+        lines.append(str(sentence_idx) + '_' + str(LJS_RATE) + '|' + sentences[sentence_idx] + '\n')
     with open(os.path.join(OUTPUT_DIR, 'metadata.csv'), 'wt') as file:
             file.writelines(lines)
 
