@@ -168,7 +168,7 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     while True:
         # Get command and multiplex behaviors.
-        command = get_input('Your next sentence, sire? ')
+        command = get_input('Your next sentence/command, sire? ')
         if command is None:
             break
         elif command == 'devices':
@@ -229,7 +229,11 @@ def main():
                 stream.write(chunk)
 
             status = get_input('Redo [r] or skip [s] (default is to commit)? ')
-            if status != 'r':
+            if status == 'r':
+                print('')
+                print('>', sentences[sentence_idx])
+                print('')
+            else:
                 break
 
         if status != 's':
