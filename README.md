@@ -3,6 +3,7 @@ Records sentences/utterances for TTS training.
 
 ## Requirements
 
+* Python 3.8.10
 * Python packages
   * Librosa
   * pysoundfile
