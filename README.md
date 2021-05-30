@@ -7,10 +7,11 @@ Records sentences/utterances for TTS training.
 * Python packages
   * Librosa
   * pysoundfile
-  * pyaudio
   * pynput
-* Conda installable
+* Conda installable (using e.g. `conda install -c conda-forge portaudio`)
   * ffmpeg
+  * portaudio
+  * pyaudio
 
 ## Supported commands when it asks for your next sentence
 
